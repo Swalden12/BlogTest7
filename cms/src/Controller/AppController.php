@@ -44,6 +44,9 @@ class AppController extends Controller
 
         parent::initialize();
     $this->loadComponent('Flash');
+    $this->loadComponent('Authorization.Authorization');
+    
+
 
     // Add this line to check authentication result and lock your site
     $this->loadComponent('Authentication.Authentication');
