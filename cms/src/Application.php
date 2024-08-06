@@ -93,32 +93,31 @@ class Application extends BaseApplication
      * @return \Cake\Http\MiddlewareQueue The updated middleware queue.
      */
     public function middleware($middlewareQueue): \Cake\Http\MiddlewareQueue
-    {
-        $middlewareQueue
-            // Catch any exceptions in the lower layers,
-            // and make an error page/response
-            ->add(ErrorHandlerMiddleware::class)
+{
+    $middlewareQueue
+        // Catch any exceptions in the lower layers,
+        // and make an error page/response
+        ->add(ErrorHandlerMiddleware::class)
 
-            // Handle plugin/theme assets like CakePHP normally does.
-            ->add(AssetMiddleware::class)
+        // Handle plugin/theme assets like CakePHP normally does.
+        ->add(AssetMiddleware::class)
 
-            // Add routing middleware.
-            ->add(new RoutingMiddleware($this))
+        // Add routing middleware.
+        ->add(new RoutingMiddleware($this))
 
-            // add Authentication after RoutingMiddleware
-            ->add(new AuthenticationMiddleware($this))
+        // Add Authentication after RoutingMiddleware
+        ->add(new AuthenticationMiddleware($this))
 
-            // Add authorization **after** authentication
-            ->add(new AuthorizationMiddleware($this));
-            $middlewareQueue->add(new AuthorizationMiddleware($this));
+        // Add Authorization after Authentication
+        ->add(new AuthorizationMiddleware($this));
 
-
-        if (Configure::read('debug')) {
-            Configure::write('DebugKit.ignoreAuthorization', true);
-        }
-
-        return $middlewareQueue;
+    if (Configure::read('debug')) {
+        Configure::write('DebugKit.ignoreAuthorization', true);
     }
+
+    return $middlewareQueue;
+}
+
 
     public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
     {

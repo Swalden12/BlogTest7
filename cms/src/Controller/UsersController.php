@@ -16,7 +16,7 @@ class UsersController extends AppController
     public function beforeFilter(EventInterface $event)
     {
         parent::beforeFilter($event);
-        // Allow login and add
+        // Allow unauthenticated users to access 'login' and 'add'
         $this->Authentication->addUnauthenticatedActions(['login', 'add']);
     }
 
@@ -27,20 +27,25 @@ class UsersController extends AppController
      */
     public function index()
     {
+        // You may want to apply authorization here for viewing the user list
+        $this->Authorization->authorize($this);
+        
         $users = $this->paginate($this->Users);
 
         $this->set(compact('users'));
         $this->set('_serialize', ['users']);
     }
 
-    public function login() {
+    public function login()
+    {
+        // Skip authorization check for the login action
         $this->Authorization->skipAuthorization();
 
         $this->request->allowMethod(['get', 'post']);
         $result = $this->Authentication->getResult();
-        // regardless of POST or GET, redirect if user is logged in
+
+        // If the user is logged in, redirect to the intended page or home
         if ($result->isValid()) {
-            // redirect to /articles after login success
             $redirect = $this->request->getQuery('redirect', [
                 'controller' => 'Articles',
                 'action' => 'index',
@@ -48,7 +53,8 @@ class UsersController extends AppController
 
             return $this->redirect($redirect);
         }
-        // display error if user submitted and authentication failed
+
+        // If the form was submitted and authentication failed, display an error
         if ($this->request->is('post') && !$result->isValid()) {
             $this->Flash->error(__('Invalid username or password'));
         }
@@ -56,10 +62,11 @@ class UsersController extends AppController
 
     public function logout()
     {
+        // Skip authorization check for the logout action
         $this->Authorization->skipAuthorization();
 
         $result = $this->Authentication->getResult();
-        // regardless of POST or GET, redirect if user is logged in
+
         if ($result->isValid()) {
             $this->Authentication->logout();
             return $this->redirect(['controller' => 'Users', 'action' => 'login']);
@@ -77,6 +84,9 @@ class UsersController extends AppController
     {
         $user = $this->Users->get($id, contain: ['Articles']);
 
+        // Authorize viewing the user's details
+        $this->Authorization->authorize($user);
+
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }
@@ -88,6 +98,7 @@ class UsersController extends AppController
      */
     public function add()
     {
+        // Skip authorization check for the add action
         $this->Authorization->skipAuthorization();
 
         $user = $this->Users->newEmptyEntity();
@@ -114,6 +125,10 @@ class UsersController extends AppController
     public function edit($id = null)
     {
         $user = $this->Users->get($id, contain: []);
+        
+        // Authorize editing the user's details
+        $this->Authorization->authorize($user);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
@@ -138,6 +153,10 @@ class UsersController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
+        
+        // Authorize deleting the user's details
+        $this->Authorization->authorize($user);
+
         if ($this->Users->delete($user)) {
             $this->Flash->success(__('The user has been deleted.'));
         } else {
