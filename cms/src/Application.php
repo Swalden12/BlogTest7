@@ -110,6 +110,8 @@ class Application extends BaseApplication
 
             // Add authorization **after** authentication
             ->add(new AuthorizationMiddleware($this));
+            $middlewareQueue->add(new AuthorizationMiddleware($this));
+
 
         if (Configure::read('debug')) {
             Configure::write('DebugKit.ignoreAuthorization', true);
