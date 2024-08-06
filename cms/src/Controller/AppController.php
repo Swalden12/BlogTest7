@@ -14,6 +14,7 @@ declare(strict_types=1);
  * @since     0.2.9
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace App\Controller;
 
 use Cake\Controller\Controller;
@@ -28,7 +29,6 @@ use Cake\Controller\Controller;
  */
 class AppController extends Controller
 {
-    
     /**
      * Initialization hook method.
      *
@@ -42,20 +42,28 @@ class AppController extends Controller
     {
         parent::initialize();
 
-        parent::initialize();
-    $this->loadComponent('Flash');
-    $this->loadComponent('Authorization.Authorization');
-    
+        // Load Flash component for displaying flash messages
+        $this->loadComponent('Flash');
+        
+        // Load the Authentication component for handling user authentication
+        $this->loadComponent('Authentication.Authentication');
 
-
-    // Add this line to check authentication result and lock your site
-    $this->loadComponent('Authentication.Authentication');
+        // Load the Authorization component for handling user authorization
+        $this->loadComponent('Authorization.Authorization');
     }
+
+    /**
+     * Before filter callback.
+     *
+     * @param \Cake\Event\EventInterface $event Event instance.
+     * @return void
+     */
     public function beforeFilter(\Cake\Event\EventInterface $event)
-{
-    parent::beforeFilter($event);
-    // for all controllers in our application, make index and view
-    // actions public, skipping the authentication check
-    $this->Authentication->addUnauthenticatedActions(['index', 'view']);
-}
+    {
+        parent::beforeFilter($event);
+        
+        // For all controllers in our application, make index and view
+        // actions public, skipping the authentication check
+        $this->Authentication->addUnauthenticatedActions(['index', 'view']);
+    }
 }
