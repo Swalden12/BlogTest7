@@ -30,6 +30,7 @@ use Cake\Http\BaseApplication;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\Routing\Router;
+use Cake\Http\Middleware\BodyParserMiddleware; // Import the BodyParserMiddleware
 
 /**
  * Application setup class.
@@ -67,7 +68,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * Bootrapping for CLI application.
+     * Bootstrapping for CLI application.
      *
      * That is when running commands.
      *
@@ -93,31 +94,33 @@ class Application extends BaseApplication
      * @return \Cake\Http\MiddlewareQueue The updated middleware queue.
      */
     public function middleware($middlewareQueue): \Cake\Http\MiddlewareQueue
-{
-    $middlewareQueue
-        // Catch any exceptions in the lower layers,
-        // and make an error page/response
-        ->add(ErrorHandlerMiddleware::class)
+    {
+        $middlewareQueue
+            // Catch any exceptions in the lower layers,
+            // and make an error page/response
+            ->add(ErrorHandlerMiddleware::class)
 
-        // Handle plugin/theme assets like CakePHP normally does.
-        ->add(AssetMiddleware::class)
+            // Handle plugin/theme assets like CakePHP normally does.
+            ->add(AssetMiddleware::class)
 
-        // Add routing middleware.
-        ->add(new RoutingMiddleware($this))
+            // Parse body data
+            ->add(new BodyParserMiddleware()) // Add BodyParserMiddleware here
 
-        // Add Authentication after RoutingMiddleware
-        ->add(new AuthenticationMiddleware($this))
+            // Add routing middleware.
+            ->add(new RoutingMiddleware($this))
 
-        // Add Authorization after Authentication
-        ->add(new AuthorizationMiddleware($this));
+            // Add Authentication after RoutingMiddleware
+            ->add(new AuthenticationMiddleware($this))
 
-    if (Configure::read('debug')) {
-        Configure::write('DebugKit.ignoreAuthorization', true);
+            // Add Authorization after Authentication
+            ->add(new AuthorizationMiddleware($this));
+
+        if (Configure::read('debug')) {
+            Configure::write('DebugKit.ignoreAuthorization', true);
+        }
+
+        return $middlewareQueue;
     }
-
-    return $middlewareQueue;
-}
-
 
     public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
     {
