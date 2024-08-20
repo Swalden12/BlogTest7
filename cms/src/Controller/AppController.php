@@ -14,7 +14,6 @@ declare(strict_types=1);
  * @since     0.2.9
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
-
 namespace App\Controller;
 
 use Cake\Controller\Controller;
@@ -41,29 +40,21 @@ class AppController extends Controller
     public function initialize(): void
     {
         parent::initialize();
-
-        // Load Flash component for displaying flash messages
         $this->loadComponent('Flash');
-        
-        // Load the Authentication component for handling user authentication
         $this->loadComponent('Authentication.Authentication');
-
-        // Load the Authorization component for handling user authorization
         $this->loadComponent('Authorization.Authorization');
+        /*
+         * Enable the following component for recommended CakePHP form protection settings.
+         * see https://book.cakephp.org/4/en/controllers/components/form-protection.html
+         */
+        //$this->loadComponent('FormProtection');
     }
 
-    /**
-     * Before filter callback.
-     *
-     * @param \Cake\Event\EventInterface $event Event instance.
-     * @return void
-     */
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        
-        // For all controllers in our application, make index and view
-        // actions public, skipping the authentication check
+        // For all controllers in our application, make index and view 
+        // Actions public, skipping the authentication check
         $this->Authentication->addUnauthenticatedActions(['index', 'view']);
     }
 }
