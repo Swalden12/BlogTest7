@@ -1,23 +1,30 @@
 <?php
 namespace App;
 
+use Cake\Core\Configure;
+use Cake\Core\ContainerInterface;
+use Cake\Datasource\FactoryLocator;
+use Cake\Error\Middleware\ErrorHandlerMiddleware;
+use Cake\Http\BaseApplication;
+use Cake\Http\Middleware\BodyParserMiddleware;
+use Cake\Http\Middleware\CsrfProtectionMiddleware;
+use Cake\Http\MiddlewareQueue;
+use Cake\ORM\Locator\TableLocator;
+use Cake\Routing\Middleware\AssetMiddleware;
+use Cake\Routing\Middleware\RoutingMiddleware;
+// Authentication added
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
 use Authentication\Middleware\AuthenticationMiddleware;
+use Cake\Routing\Router;
+use Psr\Http\Message\ServerRequestInterface;
+// Authorization added
 use Authorization\AuthorizationService;
 use Authorization\AuthorizationServiceInterface;
 use Authorization\AuthorizationServiceProviderInterface;
 use Authorization\Middleware\AuthorizationMiddleware;
 use Authorization\Policy\OrmResolver;
-use Psr\Http\Message\ServerRequestInterface;
-use Cake\Core\Configure;
-use Cake\Error\Middleware\ErrorHandlerMiddleware;
-use Cake\Http\BaseApplication;
-use Cake\Routing\Middleware\AssetMiddleware;
-use Cake\Routing\Middleware\RoutingMiddleware;
-use Cake\Routing\Router;
-use Cake\Http\Middleware\BodyParserMiddleware;
 
 class Application extends BaseApplication
     implements AuthenticationServiceProviderInterface,
