@@ -100,4 +100,3 @@ class Application extends BaseApplication
         return new AuthorizationService($resolver);
     }
 }
-3
