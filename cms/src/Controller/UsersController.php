@@ -16,7 +16,7 @@ class UsersController extends AppController
     public function index()
     {
         // Authorize the user for this action
-        $this->Authorization->authorize($this->Users);
+        $this->Authorization->skipAuthorization();
 
         $users = $this->paginate($this->Users);
         $this->set(compact('users'));
@@ -46,9 +46,11 @@ class UsersController extends AppController
     {
         // Skip authorization for logout
         $this->Authorization->skipAuthorization();
-
+    
         $result = $this->Authentication->getResult();
-        if ($result->isValid()) {
+        
+        // Check if $result is not null and is valid
+        if ($result && $result->isValid()) {
             $this->Authentication->logout();
             return $this->redirect(['controller' => 'Users', 'action' => 'login']);
         }
