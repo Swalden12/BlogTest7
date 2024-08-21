@@ -1,3 +1,4 @@
+
 <?php
 declare(strict_types=1);
 
@@ -7,7 +8,6 @@ namespace App\Controller;
  * Tags Controller
  *
  * @property \App\Model\Table\TagsTable $Tags
- * @method \App\Model\Entity\Tag[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class TagsController extends AppController
 {
@@ -18,7 +18,8 @@ class TagsController extends AppController
      */
     public function index()
     {
-        $tags = $this->paginate($this->Tags);
+        $query = $this->Tags->find();
+        $tags = $this->paginate($query);
 
         $this->set(compact('tags'));
     }
@@ -32,10 +33,7 @@ class TagsController extends AppController
      */
     public function view($id = null)
     {
-        $tag = $this->Tags->get($id, [
-            'contain' => ['Articles'],
-        ]);
-
+        $tag = $this->Tags->get($id, contain: ['Articles']);
         $this->set(compact('tag'));
     }
 
@@ -56,7 +54,7 @@ class TagsController extends AppController
             }
             $this->Flash->error(__('The tag could not be saved. Please, try again.'));
         }
-        $articles = $this->Tags->Articles->find('list', ['limit' => 200])->all();
+        $articles = $this->Tags->Articles->find('list', limit: 200)->all();
         $this->set(compact('tag', 'articles'));
     }
 
@@ -69,9 +67,7 @@ class TagsController extends AppController
      */
     public function edit($id = null)
     {
-        $tag = $this->Tags->get($id, [
-            'contain' => ['Articles'],
-        ]);
+        $tag = $this->Tags->get($id, contain: ['Articles']);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $tag = $this->Tags->patchEntity($tag, $this->request->getData());
             if ($this->Tags->save($tag)) {
@@ -81,7 +77,7 @@ class TagsController extends AppController
             }
             $this->Flash->error(__('The tag could not be saved. Please, try again.'));
         }
-        $articles = $this->Tags->Articles->find('list', ['limit' => 200])->all();
+        $articles = $this->Tags->Articles->find('list', limit: 200)->all();
         $this->set(compact('tag', 'articles'));
     }
 
@@ -89,7 +85,7 @@ class TagsController extends AppController
      * Delete method
      *
      * @param string|null $id Tag id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
+     * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null)
